@@ -4,28 +4,22 @@ from fer import FER
 from PIL import Image
 import numpy as np
 
-st.title("😊 Real-Time Facial Sentiment Analysis")
-st.write("Upload an image and the app will detect emotions.")
+st.title("Facial Sentiment Analysis")
 
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+img_file = st.camera_input("Take a picture")
 
-if uploaded_file is not None:
-    # Load image
-    image = Image.open(uploaded_file)
-    img_array = np.array(image)
+if img_file:
+    # Convert uploaded file to OpenCV image
+    img = Image.open(img_file)
+    img_array = np.array(img)
 
-    # Run FER detector
     detector = FER(mtcnn=True)
-    emotions = detector.detect_emotions(img_array)
+    result = detector.detect_emotions(img_array)
 
-    # Display image
-    st.image(image, caption="Uploaded Image", use_column_width=True)
+    st.image(img_array, caption="Your photo", use_column_width=True)
 
-    if emotions:
-        st.subheader("Detected Emotions")
-        for face in emotions:
-            st.write(face["emotions"])
+    if result:
+        emotions = result[0]["emotions"]
+        st.write("Detected emotions:", emotions)
     else:
-        st.write("No face detected. Try another image.")
-
-          
+        st.write("No face detected 😢")
